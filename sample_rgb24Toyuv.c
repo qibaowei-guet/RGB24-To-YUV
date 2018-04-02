@@ -53,56 +53,56 @@ unsigned char clip_value(unsigned char x,unsigned char min_val,unsigned char  ma
 //RGB to YUV420
 int RGB24_TO_YUV420(unsigned char *pucRGBBuffer,int width,int height,unsigned char *pucYUVBuffer)
 {
-    unsigned char y, u, v; /**< Ò»¸öÏñËØµã¶ÔÓ¦µÄYUV·ÖÁ¿ */
-    unsigned char *pucY, *pucU, *pucV; /**< Y¡¢U¡¢VÊý×é¶ÔÓ¦µÄÖ¸Õë */
-    unsigned char r, g, b; /**< Ò»¸öÏñËØµã¶ÔÓ¦µÄRGB·ÖÀà */
-    unsigned char *pucRGB; /**< RGB24¶ÔÓ¦µÄÖ¸Õë */
+    unsigned char y, u, v; /**< ä¸€ä¸ªåƒç´ ç‚¹å¯¹åº”çš„YUVåˆ†é‡ */
+    unsigned char *pucY, *pucU, *pucV; /**< Yã€Uã€Væ•°ç»„å¯¹åº”çš„æŒ‡é’ˆ */
+    unsigned char r, g, b; /**< ä¸€ä¸ªåƒç´ ç‚¹å¯¹åº”çš„RGBåˆ†ç±» */
+    unsigned char *pucRGB; /**< RGB24å¯¹åº”çš„æŒ‡é’ˆ */
 
 	int iY = 0 ;
 	int iX = 0 ;
-    //´æ´¢¿Õ¼ä´óÐ¡ Y : width*height ; U : width/2 * height/2 ; V : width/2 * height/2
+    //å­˜å‚¨ç©ºé—´å¤§å° Y : width*height ; U : width/2 * height/2 ; V : width/2 * height/2
 	pucY = pucYUVBuffer;
-	pucU = pucYUVBuffer + width*height; /**< UÊý×éÔÚYUVÊý×éµÄÆ«ÒÆÁ¿ */
-	pucV = pucU + (width*height*1/4);   /**< VÊý×éÔÚYUVÊý×éµÄÆ«ÒÆÁ¿ */
+	pucU = pucYUVBuffer + width*height; /**< Uæ•°ç»„åœ¨YUVæ•°ç»„çš„åç§»é‡ */
+	pucV = pucU + (width*height*1/4);   /**< Væ•°ç»„åœ¨YUVæ•°ç»„çš„åç§»é‡ */
 
 	for (iY = 0; iY < height;iY++){
 		pucRGB = pucRGBBuffer + width*iY*3 ;
 
 		for ( iX = 0;iX < width ; iX++){
-            /**< ¶ÁÈ¡ÏñËØµãµÄRGB·ÖÁ¿ */
+            /**< è¯»å–åƒç´ ç‚¹çš„RGBåˆ†é‡ */
 			r = *(pucRGB++);
 			g = *(pucRGB++);
 			b = *(pucRGB++);
-            /**< Í¨¹ý¹«Ê½½«RGB×ª»»³ÉÎªYUV */
+            /**< é€šè¿‡å…¬å¼å°†RGBè½¬æ¢æˆä¸ºYUV */
 			y = (unsigned char)( ( 66 * r + 129 * g +  25 * b + 128) >> 8) + 16  ;
 			u = (unsigned char)( ( -38 * r -  74 * g + 112 * b + 128) >> 8) + 128 ;
 			v = (unsigned char)( ( 112 * r -  94 * g -  18 * b + 128) >> 8) + 128 ;
-            /**< Y·ÖÁ¿Ö±½ÓÐ´ÈëYÊý×é */
+            /**< Yåˆ†é‡ç›´æŽ¥å†™å…¥Yæ•°ç»„ */
 			*(pucY++) = clip_value(y,0,255);
 
-			// ²ÉÑù: Ë®Æ½Ò»°ë£¬´¹Ö±Ò»°ë£¬ÊµÑéÖ¤Ã÷ÕâÁ½ÖÖ·½Ê½¶¼¿ÉÒÔ
+			// é‡‡æ ·: æ°´å¹³ä¸€åŠï¼Œåž‚ç›´ä¸€åŠï¼Œå®žéªŒè¯æ˜Žè¿™ä¸¤ç§æ–¹å¼éƒ½å¯ä»¥
 			if ( iY%2==0 && iX%2 == 0){
-                /**< Å¼ÊýÐÐÅ¼ÊýÁÐÊ±½«U·ÖÁ¿Ð´ÈëUÊý×é£¬¼´Ò»¸ö4*4·½¿éµÄ×óÉÏ½Ç */
+                /**< å¶æ•°è¡Œå¶æ•°åˆ—æ—¶å°†Uåˆ†é‡å†™å…¥Uæ•°ç»„ï¼Œå³ä¸€ä¸ª4*4æ–¹å—çš„å·¦ä¸Šè§’ */
                 /*
                  *     0   1   2   3
-                 *   ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+                 *   â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
                  *0  | U |   | U |   |
                  *   -------------------
                  *1  |   |   |   |   |
-                 *   ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+                 *   â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
                  */
 
 				*(pucU++) = clip_value(u,0,255);
 			}
-			else{ /**< else±íÊ¾ÆæÊýÐÐµÄÇé¿ö */
-                /**<  ÆæÊýÐÐÅ¼ÊýÁÐÊ±½«U·ÖÁ¿Ð´ÈëUÊý×é£¬¼´Ò»¸ö4*4·½¿éµÄ×óÏÂ½Ç*/
+			else{ /**< elseè¡¨ç¤ºå¥‡æ•°è¡Œçš„æƒ…å†µ */
+                /**<  å¥‡æ•°è¡Œå¶æ•°åˆ—æ—¶å°†Uåˆ†é‡å†™å…¥Uæ•°ç»„ï¼Œå³ä¸€ä¸ª4*4æ–¹å—çš„å·¦ä¸‹è§’*/
                  /*
                  *     0   1   2   3
-                 *   ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+                 *   â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
                  *0  |   |   |   |   |
                  *   -------------------
                  *1  | V |   | V |   |
-                 *   ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
+                 *   â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
                  */
 				if ( iX%2 == 0 ){
                     *(pucV++) = clip_value(v,0,255);
@@ -144,10 +144,11 @@ int RGB24_TO_YUV422(unsigned char *pucRGBBuffer,int width,int height,unsigned ch
 
 			*(pucY++) = clip_value(y,0,255);
 
-			// ²ÉÑù: Ã¿·ê2¾Í²ÉÒ»¸öU¡¢V
+			// é‡‡æ ·: å¶æ•°é‡‡é›†Uã€å¥‡æ•°é‡‡é›†V
 			if ( iX%2 == 0){
-				*(pucU++) = clip_value(u,0,255);
-				*(pucV++) = clip_value(v,0,255);
+				*(pucU++) = clip_value(u,0,255);				
+			}else{
+				*(pucV++) = clip_value(v,0,255);	
 			}
 		}
 	}
@@ -188,7 +189,7 @@ int RGB24_TO_YUV444(unsigned char *pucRGBBuffer,int width,int height,unsigned ch
 	return 1;
 }
 
-// ¿ÉÒÔÓÃº¯ÊýÖ¸ÕëµÄ·½Ê½À´¾ö¶¨µ÷ÓÃÄÄÒ»¸ö´¢´æ
+// å¯ä»¥ç”¨å‡½æ•°æŒ‡é’ˆçš„æ–¹å¼æ¥å†³å®šè°ƒç”¨å“ªä¸€ä¸ªå‚¨å­˜
 bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
 {
     bool ret = FALSE ;
@@ -214,7 +215,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
     }
 
     /*
-     * step 1 : ¶ÁÈ¡BMPÎÄ¼þÍ·ÐÅÏ¢
+     * step 1 : è¯»å–BMPæ–‡ä»¶å¤´ä¿¡æ¯
      */
     ret = ReadBMPHeader(fpBMP, &sBMPheader);
     if( ret == FALSE ){
@@ -222,7 +223,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
         return FALSE ;
     }
 
-    // ¶ÁÈ¡infoÐÅÏ¢³É¹¦ºó±£´æÔÚ½á¹¹ÌåÖÐ£¬²¢µÃµ½ÏñËØµã¸öÊý
+    // è¯»å–infoä¿¡æ¯æˆåŠŸåŽä¿å­˜åœ¨ç»“æž„ä½“ä¸­ï¼Œå¹¶å¾—åˆ°åƒç´ ç‚¹ä¸ªæ•°
     ReadBMPInfoHeader(fpBMP, &sBMPInfoheader);
     BMPPixSize =  GetBMPPixSize(sBMPInfoheader);
     sprintf(yuvSize,"%dx%d.yuv",sBMPInfoheader.biWidth,sBMPInfoheader.biHeight);
@@ -231,7 +232,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
     case YUV444:
             yuvMemorysize = YUV444MEMORY_SIZE(BMPPixSize);
             strcpy(yuvFilename,"out_yuv444_");
-            fp_RGB24ToYUV = RGB24_TO_YUV444 ; //»Øµ÷º¯Êý
+            fp_RGB24ToYUV = RGB24_TO_YUV444 ; //å›žè°ƒå‡½æ•°
             break;
     case YUV422:
             yuvMemorysize = YUV422MEMORY_SIZE(BMPPixSize);
@@ -255,7 +256,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
     }
 
      /*
-     * step 2 : ·ÖÅäRGBºÍYUVÄÚ´æ¿Õ¼ä£¬»ñÈ¡BMPÎÄ¼þµÄRGBÊý¾Ý,´æ·ÅÔÚÄÚ´æÖÐ
+     * step 2 : åˆ†é…RGBå’ŒYUVå†…å­˜ç©ºé—´ï¼ŒèŽ·å–BMPæ–‡ä»¶çš„RGBæ•°æ®,å­˜æ”¾åœ¨å†…å­˜ä¸­
      */
     pucRGBRead = (unsigned char*)malloc(BMPPixSize*3);
     pusYUV     = (unsigned char*)malloc(yuvMemorysize);
@@ -274,7 +275,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
     }
 
     /*
-     * step 3 : RGB×ª»»³ÉÎªYUV¸ñÊ½£¬Ð´ÈëYUVÎÄ¼þ
+     * step 3 : RGBè½¬æ¢æˆä¸ºYUVæ ¼å¼ï¼Œå†™å…¥YUVæ–‡ä»¶
      */
     ret = fp_RGB24ToYUV(pucRGBRead,sBMPInfoheader.biWidth,sBMPInfoheader.biHeight,pusYUV);
     if( ret == FALSE ){
@@ -284,7 +285,7 @@ bool RGB24_SaveYUVFile(YUV_E eYUV , const char *bmpUrl)
     fwrite(pusYUV,1,yuvMemorysize,fpYUV);
 
     /*
-     * step 4 : ÊÍ·ÅÄÚ´æ£¬¹Ø±ÕÎÄ¼þ
+     * step 4 : é‡Šæ”¾å†…å­˜ï¼Œå…³é—­æ–‡ä»¶
      */
     free(pusYUV);
     free(pucRGBRead);
